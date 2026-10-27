@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>依赖工作室校园服务网</title>
+<style>
+:root{
+  --bg:#0a0e17; --txt:#e6e8f0; --txt-dim:#8b93a7;
+  --glass:rgba(255,255,255,.05); --glass-line:rgba(255,255,255,.10);
+  --accent:#00e0ff; --accent2:#7c5cff; --accent3:#ff7a8a; --accent4:#39e6a0; --gold:#ffcf3f;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg);color:var(--txt)}
+body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;min-height:100vh;overflow-x:hidden}
+a{color:inherit}
+
+/* 极光背景 */
+.aurora{position:fixed;inset:0;z-index:-2;overflow:hidden}
+.aurora i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
+.aurora i:nth-child(1){width:52vw;height:52vw;background:#7c5cff;top:-18vw;left:-10vw}
+.aurora i:nth-child(2){width:46vw;height:46vw;background:#00e0ff;bottom:-16vw;right:-8vw}
+.aurora i:nth-child(3){width:34vw;height:34vw;background:#ff5cae;top:38%;left:55%;opacity:.28}
+.aurora i:nth-child(4){width:28vw;height:28vw;background:#ffcf3f;bottom:30%;left:12%;opacity:.16}
+.grid-bg{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(circle at 50% 30%,#000,transparent 85%)}
+
+/* 顶栏 */
+header{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(10,14,23,.72);border-bottom:1px solid var(--glass-line)}
+.hwrap{max-width:1440px;margin:0 auto;padding:14px 28px 0}
+.brandrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;letter-spacing:.5px;
+  background:linear-gradient(135deg,#00e0ff,#7c5cff,#ff5cae);color:#0a0e17;box-shadow:0 6px 18px rgba(124,92,255,.4)}
+.brand h1{font-size:17px;font-weight:800;letter-spacing:.3px}
+.brand p{font-size:12px;color:var(--txt-dim)}
+.badge{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:5px 11px;border-radius:999px;font-size:11.5px;color:var(--txt-dim);background:var(--glass);border:1px solid var(--glass-line);display:flex;align-items:center;gap:6px}
+.chip b{color:var(--txt)}
+.dot{width:7px;height:7px;border-radius:50%;background:#39e6a0;box-shadow:0 0 10px #39e6a0;animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* 9 类目横向导航 */
+.nav{display:flex;gap:9px;overflow-x:auto;padding:12px 0 12px;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav button{border:1px solid var(--glass-line);background:var(--glass);color:var(--txt-dim);padding:8px 15px;border-radius:999px;
+  font-size:13.5px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.25s;backdrop-filter:blur(6px)}
+.nav button:hover{color:#fff;border-color:rgba(0,224,255,.5)}
+.nav button.on{color:#0a0e17;background:linear-gradient(90deg,#00e0ff,#7c5cff);border-color:transparent;box-shadow:0 6px 18px rgba(0,224,255,.35)}
+.nav button .n{opacity:.6;font-size:11px;margin-left:3px}
+
+main{max-width:1440px;margin:0 auto;padding:26px 28px 70px}
+.panel{animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.hero h2{font-size:26px;font-weight:900;letter-spacing:.5px;display:flex;align-items:center;gap:9px}
+.hero h2 em{font-style:normal;font-size:13px;color:var(--txt-dim);font-weight:600;margin-left:4px}
+.hero p{font-size:13.5px;color:var(--txt-dim);line-height:1.75;max-width:820px;margin-top:6px}
+.hero p b{color:#fff}.hero p em{color:var(--gold);font-style:normal;font-weight:700}
+
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.search{flex:1;min-width:240px;position:relative;display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:13px;
+  background:var(--glass);border:1px solid var(--glass-line)}
+.search input{flex:1;border:none;background:transparent;color:var(--txt);font-size:13.5px;outline:none;width:100%}
+.search input::placeholder{color:#6d7590}
+.clear{cursor:pointer;font-size:12px;color:var(--txt-dim);display:none}
+.search.has .clear{display:block}
+.act{display:flex;gap:8px}
+.act button{padding:9px 14px;border-radius:11px;border:1px solid var(--glass-line);background:var(--glass);color:var(--txt-dim);
+  font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.act button.on{color:#0a0e17;background:linear-gradient(90deg,#ffcf3f,#ff9a3f);border-color:transparent}
+.act button:hover{color:#fff}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:14px}
+.card{position:relative;min-height:110px;padding:16px 14px 14px;border-radius:16px;background:var(--glass);border:1px solid var(--glass-line);
+  display:flex;flex-direction:column;align-items:center;text-align:center;cursor:pointer;transition:.28s;backdrop-filter:blur(8px);overflow:hidden}
+.card::before{content:"";position:absolute;top:-40%;left:-40%;width:180%;height:180%;background:radial-gradient(circle,var(--c),transparent 62%);opacity:.18;transition:.3s}
+.card:hover{transform:translateY(-5px);border-color:var(--c);box-shadow:0 12px 30px color-mix(in srgb,var(--c) 38%,transparent)}
+.card:hover::before{opacity:.34}
+.card .av{position:relative;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#0a0e17;
+  background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 30%,#fff));margin-bottom:9px;z-index:1}
+.card .nm{position:relative;font-size:13.5px;font-weight:700;line-height:1.3;z-index:1}
+.card .tg{position:relative;margin-top:7px;font-size:10.5px;padding:2px 8px;border-radius:999px;z-index:1;
+  background:color-mix(in srgb,var(--c) 22%,transparent);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 40%,transparent)}
+.empty{grid-column:1/-1;text-align:center;padding:40px 20px;color:var(--txt-dim);font-size:14px;background:var(--glass);border:1px dashed var(--glass-line);border-radius:16px}
+.empty b{display:block;color:#fff;margin-bottom:4px}
+
+/* ============ 通用任务单 ============ */
+.signin{display:flex;flex-direction:column;gap:16px}
+.si-hero{position:relative;overflow:hidden;padding:22px 24px;border-radius:20px;background:linear-gradient(135deg,rgba(255,140,80,.16),rgba(255,80,130,.10) 60%,rgba(124,92,255,.10));
+  border:1px solid rgba(255,140,80,.28);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.si-halo{position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,120,80,.5),transparent 60%),radial-gradient(circle at 80% 70%,rgba(255,80,140,.4),transparent 60%)}
+.si-txt{position:relative}
+.si-eyebrow{font-size:12px;letter-spacing:1.2px;color:#ffb088;font-weight:700}
+.si-txt h3{font-size:23px;margin:6px 0 6px;background:linear-gradient(90deg,#ffb088,#ff5c8a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.si-txt p{font-size:13.5px;color:var(--txt-dim);line-height:1.75}
+.si-txt em{color:#ffcf3f;font-style:normal;font-weight:700}
+.si-chips{position:relative;display:flex;flex-wrap:wrap;gap:8px}
+.si-chips span,.si-chips.cq-c span{font-size:12.5px;padding:6px 12px;border-radius:999px;background:rgba(255,120,90,.13);border:1px solid rgba(255,120,90,.3);color:#ffc2a8}
+.si-chips span{background:rgba(0,224,255,.12);border-color:rgba(0,224,255,.3);color:#8eeaff}
+.si-card{position:relative;padding:20px;border-radius:18px;background:rgba(255,255,255,.045);border:1px solid var(--glass-line);backdrop-filter:blur(10px)}
+.si-bar{display:flex;align-items:center;gap:7px;margin-bottom:16px}
+.si-bar i{width:10px;height:10px;border-radius:50%;background:#ff6b6b}
+.si-bar i:nth-child(2){background:#ffcf3f}.si-bar i:nth-child(3){background:#39e6a0}
+.si-bar b{margin-left:6px;font-size:13.5px;letter-spacing:.5px;color:#ffb088}
+.si-bar em{margin-left:auto;font-size:12px;font-style:normal;color:var(--txt-dim)}
+.si-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.si-f{display:flex;flex-direction:column;gap:5px}
+.si-f.wide{grid-column:1/-1}
+.si-f label{font-size:12.5px;color:var(--txt-dim)}
+.si-f label span{color:#ff7a8a;margin-left:2px}
+.si-in,.mj-in{width:100%;padding:11px 13px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.26);color:#fff;font-size:13.5px;outline:none;transition:.25s}
+.si-in:focus,.mj-in:focus{border-color:#ff9a5a;box-shadow:0 0 0 3px rgba(255,140,80,.22)}
+.si-up{position:relative;border:2px dashed rgba(255,140,80,.4);border-radius:12px;padding:22px;text-align:center;cursor:pointer;background:rgba(0,0,0,.18);transition:.25s}
+.si-up:hover{border-color:#ff9a5a;background:rgba(255,140,80,.06)}
+.si-up.ok{border-style:solid;border-color:#39e6a0;background:rgba(57,230,160,.08)}
+.si-up input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.si-ico{font-size:22px;display:block}
+.si-up b{display:block;font-size:13.5px;margin:4px 0 2px}.si-up small{font-size:11.5px;color:var(--txt-dim)}
+.si-foot,.mj-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:18px}
+.si-meta,.mj-meta{font-size:12px;color:var(--txt-dim)}.si-meta b,.mj-meta b{color:#ffb088}
+.si-btn,.mj-btn{flex:1;min-width:220px;padding:13px 20px;border:none;border-radius:13px;cursor:pointer;color:#0a0e17;font-weight:900;font-size:15px;
+  background:linear-gradient(90deg,#ff9a5a,#ff4f7f);box-shadow:0 8px 24px rgba(255,90,110,.4);transition:.25s}
+.si-btn:hover,.mj-btn:hover{filter:brightness(1.08);transform:translateY(-2px)}
+.si-btn.run,.mj-btn.run{background:linear-gradient(90deg,#39e6a0,#00e0ff);box-shadow:0 8px 24px rgba(57,230,160,.45);color:#0a0e17}
+.si-warn,.mj-warn{margin-top:12px;font-size:11.5px;color:var(--txt-dim);line-height:1.6}
+
+/* ============ 联系我们 · 号码卡 ============ */
+.ct-nums{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.ct-num{position:relative;display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid var(--glass-line);overflow:hidden}
+.ct-num::after{content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,224,255,.30),transparent 70%)}
+.ct-num:nth-child(2)::after{background:radial-gradient(circle,rgba(57,230,160,.30),transparent 70%)}
+.ct-num .ct-ic{font-size:30px;line-height:1;z-index:1}
+.ct-info{flex:1;z-index:1}
+.ct-info b{display:block;font-size:12px;letter-spacing:1px;color:var(--txt-dim);font-weight:600}
+.ct-info strong{display:block;font-size:26px;font-weight:800;letter-spacing:2px;background:linear-gradient(90deg,#00e0ff,#7c5cff);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;margin:2px 0 3px}
+.ct-info span{font-size:11.5px;color:var(--txt-dim);line-height:1.4}
+.ct-copy{align-self:stretch;z-index:1;border:1px solid rgba(0,224,255,.45);background:rgba(0,224,255,.10);color:#7ff6ff;
+  border-radius:11px;padding:0 16px;font-size:13px;font-weight:700;cursor:pointer;transition:.25s}
+.ct-copy:hover{background:rgba(0,224,255,.28);color:#fff;box-shadow:0 0 18px rgba(0,224,255,.35)}
+.ct-copy.run{background:linear-gradient(90deg,#39e6a0,#00d2b8);color:#04241c;border-color:transparent}
+.si-ta{resize:vertical;min-height:64px;line-height:1.55}
+@media(max-width:640px){.ct-nums{grid-template-columns:1fr}}
+
+/* ============ 今日校园 · 查寝价目 ============ */
+.cq-price{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0 4px}
+.cq-pbox{position:relative;padding:15px 12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);text-align:center;transition:.28s;overflow:hidden}
+.cq-pbox b{display:block;font-size:12px;color:var(--txt-dim);font-weight:700;letter-spacing:.5px}
+.cq-pbox strong{display:block;font-size:28px;font-weight:900;color:#fff;margin:4px 0 2px;line-height:1.1}
+.cq-pbox strong span{font-size:13px;font-weight:700;margin-left:3px;color:var(--txt-dim)}
+.cq-pbox>span{font-size:11px;color:var(--txt-dim)}
+.cq-pbox:hover{transform:translateY(-4px);border-color:rgba(255,140,100,.55);box-shadow:0 10px 26px rgba(255,100,90,.22)}
+.cq-pbox.hot{border-color:rgba(255,120,90,.5);background:linear-gradient(160deg,rgba(255,120,90,.2),rgba(255,80,140,.1));box-shadow:0 8px 24px rgba(255,100,90,.2)}
+.cq-pbox.hot::after{content:"最划算";position:absolute;top:8px;right:-1px;font-size:10px;font-weight:800;color:#3a1a00;
+  background:linear-gradient(90deg,#ffcf3f,#ff9a3f);padding:2px 9px;border-radius:999px 0 0 999px}
+@media(max-width:640px){.cq-price{grid-template-columns:1fr}}
+
+/* ============ 论文指导 · 服务台 ============ */
+.paper .pw-hero{background:linear-gradient(135deg,rgba(199,123,255,.16),rgba(255,106,129,.11) 58%,rgba(0,224,255,.09));border-color:rgba(199,123,255,.3)}
+.paper .pw-hero .si-eyebrow,.paper .pw-eyebrow{color:#d9b4ff}
+.paper .pw-txt h3{font-size:21px;margin:6px 0;background:linear-gradient(90deg,#d9b4ff,#ff9ad0,#ffb06b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.paper .pw-txt p{font-size:13px;color:var(--txt-dim);line-height:1.75}
+.paper .pw-txt em{color:var(--gold);font-style:normal;font-weight:700}
+.pw-sum{text-align:center;padding:10px 18px;border-radius:16px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.1)}
+.pw-sum b{display:block;font-size:30px;font-weight:900;color:#fff;line-height:1}.pw-sum span{font-size:11px;color:var(--txt-dim)}
+.pw-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin:0 0 18px}
+.pw-chip{position:relative;height:42px;border-radius:11px;cursor:pointer;border:1px solid rgba(255,255,255,.1);
+  background:color-mix(in srgb,var(--c) 16%,rgba(255,255,255,.03));color:#fff;font-size:12.5px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.15;padding:0 5px;transition:.22s;overflow:hidden}
+.pw-chip span{position:relative;z-index:1}
+.pw-chip::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,var(--c),transparent 70%);opacity:.5;transition:.22s}
+.pw-chip:hover{transform:translateY(-3px);border-color:var(--c);box-shadow:0 8px 20px color-mix(in srgb,var(--c) 45%,transparent)}
+.pw-chip.on{border-color:var(--c);box-shadow:0 0 0 2px var(--c),0 8px 22px color-mix(in srgb,var(--c) 50%,transparent);background:color-mix(in srgb,var(--c) 34%,rgba(255,255,255,.05))}
+.pw-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px}
+.pw-f{display:flex;flex-direction:column;gap:5px}.pw-f.wide{grid-column:1/-1}
+.pw-f label{font-size:12.5px;color:var(--txt-dim)}
+.pw-f label span{color:#ff7a8a;margin-left:2px}
+.pw-in{width:100%;padding:11px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.24);color:#fff;font-size:13.5px;outline:none;transition:.22s}
+.pw-in:focus{border-color:#c77bff;box-shadow:0 0 0 3px rgba(199,123,255,.24)}
+.pw-btn{background:linear-gradient(90deg,#c77bff,#ff6b81);box-shadow:0 8px 24px rgba(199,123,255,.42)}
+.pw-btn.run{background:linear-gradient(90deg,#39e6a0,#00e0ff);box-shadow:0 8px 24px rgba(57,230,160,.45)}
+@media(max-width:640px){.pw-form{grid-template-columns:1fr}}
+
+/* ============ 实习GZ · 专业大全 ============ */
+.major .mj-hero{background:linear-gradient(135deg,rgba(124,92,255,.16),rgba(0,224,255,.10) 55%,rgba(255,92,174,.12));border-color:rgba(124,92,255,.28)}
+.major .mj-hero .si-eyebrow,.major .mj-eyebrow{color:#b9a6ff}
+.major .mj-txt h3{font-size:21px;margin:6px 0;background:linear-gradient(90deg,#a98bff,#00e0ff,#ff9ad0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.major .mj-txt p{font-size:13px;color:var(--txt-dim);line-height:1.75}
+.major .mj-txt em{color:var(--gold);font-style:normal;font-weight:700}
+.mj-sum{text-align:center;padding:10px 18px;border-radius:16px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.1)}
+.mj-sum b{display:block;font-size:30px;font-weight:900;color:#fff;line-height:1}.mj-sum span{font-size:11px;color:var(--txt-dim)}
+.mj-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 0 18px}
+.mj-f{display:flex;flex-direction:column;gap:5px}.mj-f.wide{grid-column:1/-1}
+.mj-f label{font-size:12.5px;color:var(--txt-dim)}
+.mj-f label span{color:#ff7a8a;margin-left:2px}
+.mj-f label small{color:var(--gold);font-size:11px;margin-left:6px}
+.mj-f .mj-in:focus{border-color:#8b7bff;box-shadow:0 0 0 3px rgba(139,123,255,.22)}
+.mj-wallhead{display:flex;align-items:center;justify-content:space-between;margin:2px 0 10px;font-size:12.5px;color:var(--txt-dim)}
+.mj-wallhead em{color:var(--gold);font-style:normal;font-weight:700}
+.mj-wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:9px;margin-bottom:18px}
+.mj-chip{position:relative;height:46px;border-radius:12px;cursor:pointer;border:1px solid rgba(255,255,255,.1);
+  background:color-mix(in srgb,var(--c) 16%,rgba(255,255,255,.03));color:#fff;font-size:13px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.15;padding:0 6px;transition:.22s;overflow:hidden}
+.mj-chip span{position:relative;z-index:1}
+.mj-chip::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,var(--c),transparent 70%);opacity:.5;transition:.22s}
+.mj-chip:hover{transform:translateY(-3px);border-color:var(--c);box-shadow:0 8px 20px color-mix(in srgb,var(--c) 45%,transparent)}
+.mj-chip.on{border-color:var(--c);box-shadow:0 0 0 2px var(--c),0 8px 22px color-mix(in srgb,var(--c) 50%,transparent);background:color-mix(in srgb,var(--c) 32%,rgba(255,255,255,.05))}
+.mj-btn{background:linear-gradient(90deg,#a98bff,#00e0ff);box-shadow:0 8px 24px rgba(124,92,255,.42)}
+.mj-meta b{color:#a98bff}
+@media(max-width:640px){.mj-form{grid-template-columns:1fr}.mj-chip{height:42px;font-size:12.5px}}
+
+.toast{position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;
+  padding:12px 22px;border-radius:999px;background:rgba(20,22,50,.92);border:1px solid var(--glass-line);
+  backdrop-filter:blur(12px);font-size:13.5px;transition:.3s;z-index:99}.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+footer{max-width:1440px;margin:0 auto;padding:26px 28px 40px;color:var(--txt-dim);font-size:12.5px;
+  border-top:1px solid var(--glass-line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--accent);text-decoration:none}
+footer a:hover{text-decoration:underline}
+@media(max-width:640px){
+  .hwrap{padding:14px 16px 0}.brand h1{font-size:15px}main{padding:20px 16px 60px}
+  .hero h2{font-size:21px}.grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:11px}
+  .si-grid{grid-template-columns:1fr}footer{padding:20px 16px 30px}
+}
+</style>
+</head>
+<body>
+<div class="aurora"><i></i><i></i><i></i><i></i></div>
+<div class="grid-bg"></div>
+
+<header>
+  <div class="hwrap">
+    <div class="brandrow">
+      <div class="logo">YL</div>
+      <div class="brand">
+        <h1>依赖工作室校园服务网</h1>
+        <p>实习 .DK· 网课 · 签到.查寝 · 请假条，学习通课程签到。论文指导、一个页面全搞定</p>
+      </div>
+      <div class="badge">
+        <span class="chip"><span class="dot"></span>服务在线</span>
+        <span class="chip">已收录 <b id="totalNum">0</b> 个入口</span>
+        <span class="chip" id="clock">--:--</span>
+      </div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+  </div>
+</header>
+
+<main id="main"></main>
+
+<footer>
+  <span>© <span id="yr"></span> Campus Hub · 数据仅保存在你本机浏览器，可自由拖拽排序 / 增删。</span>
+  <span>点卡片即跳转（示例链接可自行替换）｜<a href="#" id="resetBtn">恢复默认排序</a></span>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= 数据 ================= */
+// url 留空时点击仅提示，可自行补成真实地址。
+const DATA = {
+  "实习DK平台": [
+    ["习讯云","实习","xixunyun"],["以道书院","实习","yidao"],["实习云","实习","shixiyun"],["成学云","实习","chengxue"],
+    ["枣庄职业","院校","zzzy"],["柳州城市职业学院","院校","lzcs"],["江阳城建职业学院","院校","jycity"],["优鲤方舟","实习","youlifangzhou"],
+    ["慧职教","实习","huizhijiao"],["白银职业矿冶技术学院","院校","byky"],["福建卫生职业技术学院","院校","fjws"],["广州生态学院","院校","gzst"],
+    ["学习通","网课","xuexitong"],["今日校园","校园","jrxy"],["喜鹊儿","校园","xiqueer"],["湄洲湾职业技术学院","院校","mzw"],
+    ["学习通课程签到","签到","xtqd"],["实验实践","实验","shiyan"],["技实习","实习","jishixi"],["邵阳工业职业技术学院","院校","sygy"],
+    ["四川机电职业技术学院","院校","scjd"],["山东交通学院","院校","sdjt"],["智慧正师","实习","zhihzheng"],["兰州外语职业学院","院校","lzwaiyu"],
+    ["小北学生","实习","xiaobei"],["福建幼师高等专科学校","院校","fjys"],["南充文化旅游","院校","nchw"],["福建信息职业技术学院","院校","fjxx"],
+    ["云浮医职学院","院校","yfyz"],["安徽林业","院校","ahly"],["昭通学院","院校","ztxy"],
+    ["智慧泉海","查寝","qh"],["济南职业学院","院校","jnzy"],["临沂职业学院","院校","lyzy"],["工学云","实习","gongxueyun"],
+    ["C30","实习","c30"],["广市管理","实习","gsgl"],["长春师范大学","院校","ccsf"],["医学电子","实习","yxdz"],
+    ["安小信","实习","anxiaoxin"],["完美世界校园","校园","wmshijie"],["秦皇岛职业","院校","qhdzy"],["智慧山电","实习","zhishandian"],
+    ["广西物流职业","院校","gxwl"],["重庆公共运输职业学院","院校","cqgyys"],["苏州百年查寝","查寝","szbn"],["新思维","实习","xinsiwei"],
+    ["智慧泉海（查寝）","查寝","qh2"],["智慧农工","实习","zhinonggong"],["日照航海","实习","rzhh"],["校友邦","实习","xiaoyoubang"],
+    ["桐城师范学院","院校","tcsf"],["广东肇庆航空职业学院","院校","zqhk"],["职校家园","实习","zhixiao"],["i水院","院校","ishuiyuan"],
+    ["广东建设职业技术学院","院校","gjsj"],["江西职教（江西智慧育）","实习","jxzj"],["i鳄院","院校","ieyuan"],["云实习助手","实习","yunxszs"],
+    ["畅享智习","实习","changxiang"],["智慧教服","实习","zhijiaofu"],["有课互联","实习","youke"],["数字三职","院校","szsz"],
+    ["抚顺职业","院校","fshunzy"],["惠通江职","院校","htjz"],["云南交运","实习","ynjy"],["重庆青年职业技术学院","院校","cqqn"],
+    ["新思维实习","实习","xinsiwei2"],["呼伦贝尔学院","院校","hlbe"],["数智职大","院校","sz zd"],["爱在苏职大","院校","aiszd"],
+    ["乌i职大","院校","wizd"],["民大实习","实习","mindashi"],["河南交院","院校","hnjiaoyuan"],["湖南汽车工程职业大学","院校","hngc"],
+    ["锦医道","实习","jyd"],["桂小联","实习","guixiaolian"],["今日校园（查寝）","查寝","jrxyqin"],["哈科职数字校园","校园","hkzhishu"],
+    ["校企益邦","实习","xiaoqiyb"],["学生服务综合应用","校园","xsfuwu"],["常州机电职业技术学院","院校","czjd"],["北软库课网","网课","beiruan"],
+    ["中新天达实验实践","实验","zxtd"],["云上河开","实习","yunshangkai"],["群报数","签到","qunbaoshu"],["博行","实习","boxing"],
+    ["习行","实习","xixing"],["广西职业学院","院校","gxzy"],["甘肃交通职业技术学院","院校","gsjt"],["甘肃卫生技术学院","院校","gsws"],
+    ["秦皇岛职院","院校","qhdzyyuan"],["正方云","实习","zhengfangyun"],["咸职通","校园","xianzhitong"],["广州华夏教育","院校","gzhuaxia"],
+    ["湄洲湾职业学院","院校","mzwzy"],["实习掌上通","实习","szzt"],["天府新区技术学院","院校","tfsq"],["YN智慧校园","校园","ynzhihui"],
+    ["湖南环境生物学院","院校","hnhj"],["莱实习","实习","laishixi"],["湖南云就业平台","实习","hnyunjiuye"],["越沐职畅","实习","yuemu"],
+    ["DK实验实践","实验","dk_sys"],["校联数科","实习","xiaoliansk"],["i昭院","院校","izhaoyuan"],["接龙管家","签到","jielong"],
+    ["福建船政交通职业学院","院校","fjchuanzheng"],["广西幼儿师范高等专科学校","院校","gxyouer"],["安徽审计","院校","ahshenji"],
+    ["来豹接龙","签到","laibao"],["奕辅导","网课","yifudao"],["智汇昆卫","实习","zhihkw"],["群打卡","签到","qundaka"],
+    ["校聘云","实习","xiaopinyun"],["易校园","校园","yixiaoyuan"],["i警院","院校","ijingyuan"],["广西农业工程职业技术学院","院校","gxnongye"],
+    ["辽宁医职院","院校","lnyzy"],["易班","校园","yiban"],["校企育才","实习","xiaoqiyc"],["乘方教务","校园","chengfang"],
+    ["渤海理工职业学院","院校","bohai"],["石油实习","实习","shiyouxishi"],["湖南信息职院就创业服务平台","实习","hxxxjcy"],
+    ["云南技师学院","院校","ynjs"],["智慧工程职院","院校","zhigczy"],["广轻智慧校园3.0","校园","gqzhihui"],["守实专业实践平台","实验","shoushi"],
+    ["兰州科技职院实习管理系统","实习","lzkj"],["铜仁学院","院校","trxy"],["智慧山水","校园","shuishan"],["你好苏大应用","校园","nihaosuda"],
+    ["职业院校学徒制","实习","xuetuzhi"],["智慧女职","院校","zhinvzhi"],["湘食药职业","院校","xiangshiyao"],["泸职院","院校","luzhiyuan"],
+    ["i昭院","院校","izhaoyuan2"],["我在校园","校园","wozaixy"],["广东财贸职业学院","院校","gdcaimao"],["福建信息职业技术学院","院校","fjxx2"],
+    ["福建幼儿师范高等专科学校","院校","fjyes2"],["北部湾大学教务处","院校","bbwdxx"],["徽商职业学院","院校","huishang"],
+    ["广东省财经职业技术学校","院校","gdscaijing"],["苏州职业技术大学","院校","szzjdx"],["山西职院学工在线","校园","sxzhixuegong"],
+    ["山西同文实习易","实习","sxtongwen"],["邵阳工业职业技术学院","院校","sygy2"],["金山职业技术学院","院校","jinshan"],
+    ["滨州科技职业学院","院校","binzhoukj"],["企微-佳大学工","校园","qiwei"],["北部湾大学","院校","bbwd"],["小东实习管理","实习","xiaodong"],
+    ["泰州职业","院校","taizhouzy"],["更多需要定制","more","more_dk"]
+  ],
+  "实用软件": [
+    ["WPS","办公","wps"],["QQ","沟通","qq"],["微信","沟通","wx"],["钉钉","协作","dd"],["腾讯会议","会议","txhy"],["剪映","影音","jy"],
+    ["PS","设计","ps"],["CAD","设计","cad"],["知网","文献","cnki"],["百度网盘","下载","wp"],["夸克","浏览器","kuaik"],["网易云音乐","娱乐","wy"],
+    ["B站","影音","bili"],["抖音","影音","dy"],["小红书","娱乐","xhs"],["微博","沟通","wb"],["淘宝","购物","tb"],["京东","购物","jd"],
+    ["支付宝","缴费","zfb"],["高德地图","工具","gd"],["有道词典","工具","yd"],["欧路词典","工具","ol"],["石墨文档","协作","sm"],["幕布","笔记","mb"],
+    ["Xmind","笔记","xm"],["Everything","工具","ev"]
+  ],
+  "学习通课程": [],
+  "今日校园": [],
+  "论文指导": [
+    ["专科毕业论文","论文","lw_0"],["本科毕业论文","论文","lw_1"],["硕士论文辅导","论文","lw_2"],["开题报告代写","论文","lw_3"],
+    ["文献综述","论文","lw_4"],["选题定题","论文","lw_5"],["查重降重","论文","lw_6"],["知网查重","论文","lw_7"],
+    ["维普查重","论文","lw_8"],["万方查重","论文","lw_9"],["AI率检测","论文","lw_10"],["AI率降痕","论文","lw_11"],
+    ["格式排版","论文","lw_12"],["目录图表编号","论文","lw_13"],["参考文献著录","论文","lw_14"],["中英文摘要","论文","lw_15"],
+    ["致谢答辩PPT","论文","lw_16"],["答辩稿与问答","论文","lw_17"],["课程论文","论文","lw_18"],["期末大作业","论文","lw_19"],
+    ["调查报告","论文","lw_20"],["案例分析","论文","lw_21"],["实习报告","论文","lw_22"],["实习周记","论文","lw_23"],
+    ["毕业设计","论文","lw_24"],["CAD图纸说明","论文","lw_25"],["实验报告","论文","lw_26"],["数据分析","论文","lw_27"],
+    ["SPSS/Python","论文","lw_28"],["问卷设计回收","论文","lw_29"],["论文发表","论文","lw_30"],["期刊投稿","论文","lw_31"],
+    ["职称论文","论文","lw_32"],["小论文速成","论文","lw_33"],["英语论文润色","论文","lw_34"],["翻译摘译","论文","lw_35"],
+    ["任务书","论文","lw_36"],["中期检查","论文","lw_37"],["进度表","论文","lw_38"],["盲审预检","论文","lw_39"],
+    ["成教/自考论文","论文","lw_40"],["在职研究生论文","论文","lw_41"],["紧急加急","论文","lw_42"],["其他需求","论文","lw_43"]
+  ],
+  "网课": [
+    ["中国大学MOOC","网课","wk_mooc"],["智慧树","网课","wk_zhihui"],["超星尔雅","网课","wk_erya"],["学习通","网课","wk_xt"],
+    ["腾讯课堂","网课","wk_tencent"],["网易云课堂","网课","wk_wangyi"],["B站课程","自学","wk_bili"],["抖音公开课","自学","wk_douyin"],
+    ["Zoom","直播","wk_zoom"],["腾讯会议·课堂","直播","wk_meeting"],["钉钉直播","直播","wk_ding"],["ClassIn","直播","wk_classin"],
+    ["录播回放","回放","wk_hf"],["倍速播放","工具","wk_speed"],["网课倍速插件","工具","wk_ext"],["自动签到脚本","工具","wk_auto"]
+  ],
+  /* ===== 实习GZ：实习生专业大全 ===== */
+  "实习GZ": [
+    ["安保","专业","gz_0"],["餐饮","专业","gz_1"],["生活服务","专业","gz_2"],["畜牧","专业","gz_3"],["养殖","专业","gz_4"],
+    ["宠物医院","专业","gz_5"],["电商","专业","gz_6"],["跨境电商","专业","gz_7"],["法律类","专业","gz_8"],["航空","专业","gz_9"],
+    ["航天","专业","gz_10"],["空乘","专业","gz_11"],["互联网","专业","gz_12"],["云计算","专业","gz_13"],["网络科技","专业","gz_14"],
+    ["人工智能","专业","gz_15"],["科技型","专业","gz_16"],["化工","专业","gz_17"],["工业","专业","gz_18"],["会计","专业","gz_19"],
+    ["营销","专业","gz_20"],["机械机电","专业","gz_21"],["汽车汽修","专业","gz_22"],["电气电子","专业","gz_23"],["新能源","专业","gz_24"],
+    ["建筑类","专业","gz_25"],["建材","专业","gz_26"],["造价","专业","gz_27"],["工程类","专业","gz_28"],["能源开发","专业","gz_29"],
+    ["教育类","专业","gz_30"],["景观","专业","gz_31"],["园林","专业","gz_32"],["设计类","专业","gz_33"],["酒店管理","专业","gz_34"],
+    ["旅游管理","专业","gz_35"],["导游","专业","gz_36"],["商贸","专业","gz_37"],["零售商超","专业","gz_38"],["销售","专业","gz_39"],
+    ["食品类","专业","gz_40"],["体育类","专业","gz_41"],["文化艺术","专业","gz_42"],["广告","专业","gz_43"],["会展","专业","gz_44"],
+    ["摄影","专业","gz_45"],["物流","专业","gz_46"],["仓储","专业","gz_47"],["运输","专业","gz_48"],["物业管理","专业","gz_49"],
+    ["养老类","专业","gz_50"],["月子中心","专业","gz_51"],["大健康","专业","gz_52"],["药店药房","专业","gz_53"],["医疗器械","专业","gz_54"],
+    ["制药","专业","gz_55"],["医药销售","专业","gz_56"],["医院","专业","gz_57"],["其他类型","专业","gz_58"]
+  ],
+  "请假条": [
+    ["我要请假","请假","qj_new"],["事假申请","请假","qj_shi"],["病假申请","请假","qj_bing"],["公假申请","请假","qj_gong"],
+    ["节假日离校","请假","qj_jie"],["寒暑假留校","请假","qj_liu"],["外出就医","请假","qj_yi"],["丧假申请","请假","qj_sang"],
+    ["我的请假记录","记录","qj_log"],["待审批","记录","qj_wait"],["已通过","记录","qj_ok"],["被驳回","记录","qj_no"],
+    ["家长短信通知","通知","qj_sms"],["辅导员审批","互动","qj_sp"],["院系审批","互动","qj_xy"],["销假","请假","qj_xiao"],
+    ["导出请假条PDF","工具","qj_pdf"],["请假模板","工具","qj_mb"],["紧急联系","服务","qj_urgent"],["更多需要定制","more","qj_more"]
+  ],
+  "联系我们": [
+    ["辅导员·企业微信","联系","ct_fd"],["班主任","联系","ct_bzr"],["院系办公室","联系","ct_xy"],["教务处","联系","ct_jwc"],
+    ["学工部","联系","ct_xgb"],["实习指导老师","联系","ct_sxzd"],["就业指导中心","联系","ct_jyzd"],["心理中心","联系","ct_xl"],
+    ["校医院","联系","ct_xyy"],["保卫处","联系","ct_bwc"],["宿管中心","联系","ct_sg"],["图书馆","联系","ct_ts"],
+    ["校园110","紧急","ct_110"],["急救 120","紧急","ct_120"],["故障报修","服务","ct_bx"],["意见反馈","服务","ct_fb"],
+    ["官方QQ群","联系","ct_qq"],["微信公众号","联系","ct_wx"],["邮箱反馈","联系","ct_mail"],["更多需要定制","more","ct_more"]
+  ]
+};
+
+/* 颜色盘 */
+const PALETTE={
+  "实习":["#7c5cff","#00e0ff","#ff5cae","#ffcf3f","#39e6a0","#ff8a3d","#4cc2ff","#c77bff"],
+  "院校":["#5b8cff","#38d6c4","#ff7ab8","#ffb84d","#8b7bff","#2fdd8e","#ff6b6b","#6fd0ff"],
+  "校园":["#00e0ff","#7c5cff","#39e6a0","#ffcf3f","#ff5cae","#4cc2ff","#ff9f43","#a6ffb0"],
+  "网课":["#ff5cae","#7c5cff","#ffcf3f","#ff8a3d","#c77bff","#ff6b9d","#4cc2ff","#ffd93d"],
+  "签到":["#39e6a0","#00e0ff","#4cc2ff","#7c5cff","#a6ffb0","#2fdd8e","#6fd0ff","#00d2b8"],
+  "查寝":["#ff8a3d","#ffcf3f","#ff5cae","#ff6b6b","#ffb84d","#ff9f43","#ff7ab8","#ffd93d"],
+  "实验":["#4cc2ff","#7c5cff","#00e0ff","#38d6c4","#c77bff","#6fd0ff","#2fdd8e","#8b7bff"],
+  "成绩":["#ffcf3f","#ff8a3d","#ffb84d","#ffd93d","#39e6a0","#ff9f43","#ff6b6b","#ffe08a"],
+  "任务":["#ff5cae","#ff8a3d","#ff6b6b","#c77bff","#ff7ab8","#ff5cae","#7c5cff","#ff9f43"],
+  "通知":["#ff6b6b","#ff8a3d","#ff5cae","#ffcf3f","#ff7ab8","#ff9f43","#ffb84d","#ffd93d"],
+  "课表":["#7c5cff","#4cc2ff","#00e0ff","#8b7bff","#6fd0ff","#c77bff","#5b8cff","#a6b4ff"],
+  "工具":["#9aa0c7","#7c8cff","#38d6c4","#4cc2ff","#b9c2ff","#6fd0ff","#c77bff","#39e6a0"],
+  "互动":["#c77bff","#ff5cae","#7c5cff","#ff7ab8","#a6ffb0","#4cc2ff","#ff9f43","#8b7bff"],
+  "自学":["#38d6c4","#39e6a0","#00e0ff","#4cc2ff","#2fdd8e","#6fd0ff","#7c5cff","#a6ffb0"],
+  "直播":["#ff5cae","#ff6b6b","#ff8a3d","#c77bff","#ff7ab8","#7c5cff","#ff9f43","#ffcf3f"],
+  "回放":["#4cc2ff","#5b8cff","#7c5cff","#6fd0ff","#8b7bff","#00e0ff","#c77bff","#a6b4ff"],
+  "备考":["#ffcf3f","#ff8a3d","#ffb84d","#ffd93d","#ff9f43","#39e6a0","#ff6b6b","#ffe08a"],
+  "文献":["#8b7bff","#7c5cff","#c77bff","#5b8cff","#a6b4ff","#4cc2ff","#6fd0ff","#9aa0c7"],
+  "笔记":["#39e6a0","#38d6c4","#2fdd8e","#00e0ff","#a6ffb0","#4cc2ff","#7c5cff","#6fd0ff"],
+  "办公":["#5b8cff","#4cc2ff","#7c5cff","#6fd0ff","#8b7bff","#00e0ff","#38d6c4","#b9c2ff"],
+  "会议":["#00e0ff","#4cc2ff","#5b8cff","#6fd0ff","#7c5cff","#38d6c4","#8b7bff","#a6b4ff"],
+  "沟通":["#39e6a0","#00e0ff","#4cc2ff","#a6ffb0","#2fdd8e","#6fd0ff","#7c5cff","#38d6c4"],
+  "协作":["#7c5cff","#5b8cff","#8b7bff","#4cc2ff","#c77bff","#6fd0ff","#00e0ff","#b9c2ff"],
+  "缴费":["#ffcf3f","#ffb84d","#ff8a3d","#ffd93d","#39e6a0","#ff9f43","#ff6b6b","#ffe08a"],
+  "校园卡":["#ff8a3d","#ffcf3f","#ffb84d","#ffd93d","#ff9f43","#ff6b6b","#39e6a0","#ff7ab8"],
+  "服务":["#38d6c4","#39e6a0","#00e0ff","#2fdd8e","#4cc2ff","#6fd0ff","#7c5cff","#a6ffb0"],
+  "证件":["#c77bff","#7c5cff","#8b7bff","#ff5cae","#ff7ab8","#5b8cff","#ffcf3f","#b9c2ff"],
+  "记录":["#9aa0c7","#7c8cff","#b9c2ff","#6fd0ff","#4cc2ff","#c77bff","#8b7bff","#38d6c4"],
+  "日报":["#ff8a3d","#ffcf3f","#ffb84d","#ffd93d","#ff9f43","#ff6b6b","#39e6a0","#ff7ab8"],
+  "请假":["#ff5cae","#c77bff","#ff7ab8","#7c5cff","#ff6b9d","#ff9f43","#ff8a3d","#ffcf3f"],
+  "紧急":["#ff3b3b","#ff6b6b","#ff8a3d","#ff5cae","#ff4747","#ff9f43","#ffb84d","#ffd93d"],
+  "联系":["#39e6a0","#00e0ff","#4cc2ff","#2fdd8e","#6fd0ff","#7c5cff","#a6ffb0","#38d6c4"],
+  "娱乐":["#ff5cae","#c77bff","#7c5cff","#ff7ab8","#ffcf3f","#ff9f43","#4cc2ff","#ff6b9d"],
+  "影音":["#c77bff","#7c5cff","#ff5cae","#8b7bff","#ff7ab8","#4cc2ff","#ffcf3f","#ff6b9d"],
+  "下载":["#ff8a3d","#ffcf3f","#ffb84d","#ffd93d","#39e6a0","#ff9f43","#ff6b6b","#ff7ab8"],
+  "浏览器":["#4cc2ff","#5b8cff","#00e0ff","#6fd0ff","#7c5cff","#8b7bff","#38d6c4","#b9c2ff"],
+  "设计":["#ff5cae","#7c5cff","#4cc2ff","#c77bff","#ffcf3f","#39e6a0","#8b7bff","#ff9f43"],
+  "购物":["#ff8a3d","#ffcf3f","#ffb84d","#ffd93d","#ff6b6b","#ff9f43","#39e6a0","#ff7ab8"],
+  "专业":["#a98bff","#00e0ff","#ff9ad0","#39e6a0","#ffcf3f","#4cc2ff","#7c5cff","#ff8a3d","#c77bff","#6fd0ff","#2fdd8e","#ff6b6b"],
+  "更多":["#9aa0c7","#b9c2ff","#7c8cff","#c77bff","#6fd0ff","#4cc2ff","#ffcf3f","#ff5cae"],
+  "more":["#7c5cff","#00e0ff","#ff5cae","#ffcf3f","#39e6a0","#ff8a3d","#4cc2ff","#c77bff"]
+};
+function colorOf(tag,seed){
+  const arr=PALETTE[tag]||PALETTE["更多"];
+  return arr[Math.abs(hash(seed))%arr.length];
+}
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function abbr(nm){return (nm.replace(/[·（）()【】\s]/g,"").slice(0,2))||"·";}
+
+/* ================= 状态 ================= */
+const CATS=["实习DK平台","实用软件","学习通课程","今日校园","论文指导","网课","实习GZ","请假条","联系我们"];
+const ICONS=["🎓","💻","📚","🏫","📄","🎥","🧳","📝","📞"];
+const STORE="campus_hub_v1";
+const SESS={};
+let state={cat:CATS[0],order:{},view:"all"};
+CATS.forEach(c=>{if(!state.order[c])state.order[c]=DATA[c].map((_,i)=>i);});
+try{const s=JSON.parse(localStorage.getItem(STORE));if(s&&s.order)state.order={...state.order,...s.order};}catch(e){}
+
+
+const $$=sel=>document.querySelectorAll(sel);
+function save(){try{localStorage.setItem(STORE,JSON.stringify({order:state.order}));}catch(e){}}
+function toast(m){const t=document.querySelector("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("on"),1600);}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* ================= 导航 ================= */
+function renderNav(){
+  const nav=document.querySelector("#nav");nav.innerHTML="";
+  CATS.forEach((c,i)=>{
+    const b=document.createElement("button");
+    b.innerHTML=`${ICONS[i]} ${c}<span class="n">${DATA[c].length||""}</span>`;
+    if(c==="学习通课程"||c==="今日校园")b.querySelector(".n").style.display="none";
+    b.className= state.cat===c?"on":"";
+    b.onclick=()=>{state.cat=c;render();window.scrollTo({top:0,behavior:"smooth"});};
+    nav.appendChild(b);
+  });
+  const total=CATS.reduce((n,c)=>n+DATA[c].length,0);
+  const t=document.querySelector("#totalNum");if(t)t.textContent=total;
+}
+
+/* ================= 卡片 ================= */
+function cardEl(nm,tag,key){
+  const el=document.createElement("div");el.className="card";el.style.setProperty("--c",colorOf(tag,key));
+  el.innerHTML=`<div class="av">${esc(abbr(nm))}</div><div class="nm"></div><div class="tg">${esc(tag)}</div>`;
+  el.querySelector(".nm").innerHTML=esc(nm);
+  el.onclick=()=>toast("示例入口："+nm+"（把 url 填进 DATA 即可跳转）");
+  el.draggable=state.view==="sort";
+  el.ondragstart=e=>{e.dataTransfer.setData("text/plain",key);el.style.opacity=.4;};
+  el.ondragend=()=>{el.style.opacity="";};
+  el.ondragover=e=>{e.preventDefault();};
+  el.ondrop=e=>{e.preventDefault();
+    const from=state.order[state.cat].indexOf(key);
+    const to=state.order[state.cat].indexOf(el.dataset.key??key);
+    const arr=state.order[state.cat];
+    arr.splice(from,1);arr.splice(to,0,key);save();render();
+  };
+  el.dataset.key=key;
+  return el;
+}
+
+/* 拖拽排序（网格版） */
+let dragKey=null;
+function enableSort(grid){
+  grid.querySelectorAll(".card").forEach(c=>{
+    c.draggable=true;
+    c.ondragstart=()=>{dragKey=c.dataset.key;c.style.opacity=.4;};
+    c.ondragend=()=>{c.style.opacity="";dragKey=null;};
+    c.ondragover=e=>e.preventDefault();
+    c.ondrop=e=>{e.preventDefault();
+      if(!dragKey||dragKey===c.dataset.key)return;
+      const arr=state.order[state.cat];
+      const a=arr.indexOf(dragKey),b=arr.indexOf(c.dataset.key);
+      arr.splice(a,1);arr.splice(b,0,dragKey);save();render();
+    };
+  });
+}
+
+/* 添加入口 */
+function addEntry(){
+  const nm=prompt("入口名称？");if(!nm||!nm.trim())return;
+  const tg=prompt("标签（实习/院校/网课/查寝/签到/请假/联系…）","实习");if(tg===null)return;
+  DATA[state.cat].push([nm.trim(),tg.trim(),Date.now()+""]);
+  state.order[state.cat]=DATA[state.cat].map((_,i)=>i);
+  save();render();toast("已添加："+nm.trim());
+}
+
+/* ================= 学习通课程：签到任务单 ================= */
+const SIGNTASK=["课程名字","账号","密码","时间","地址","照片"];
+function buildSignIn(){
+  const wrap=document.createElement("div");wrap.className="signin";
+  wrap.innerHTML=`
+    <div class="si-hero">
+      <div class="si-halo"></div>
+      <div class="si-txt">
+        <span class="si-eyebrow">📖 超星学习通 · 全方式签到</span>
+        <h3>学习通课程签到</h3>
+        <p>签到方式目前有：<em>照片、人脸、位置、手势，扫码、数字、群签到</em>等等多种签到完事，都可以完美解决。</p>
+      </div>
+      <div class="si-chips">
+        <span>📷 照片</span><span>🙂 人脸</span><span>📍 位置</span>
+        <span>✋ 手势</span><span>🔳 扫码</span><span>🔢 数字</span><span>👥 群签到</span>
+      </div>
+    </div>
+
+    <div class="si-card">
+      <div class="si-bar"><i></i><i></i><i></i><b>签到任务单</b><em id="siState">待提交</em></div>
+      <div class="si-grid">
+        ${SIGNTASK.map(f=>{
+          const photo=f==="照片";
+          return `<div class="si-f${photo?' wide':''}">
+            <label>${f}<span>*</span></label>
+            ${photo
+              ? `<div class="si-up" tabindex="0"><input type="file" accept="image/*">
+                   <span class="si-ico">🖼️</span><b>点击 / 拖拽上传照片</b><small>PNG · JPG · 10MB 以内</small></div>`
+              : `<input class="si-in" type="${f==="密码"?"password":"text"}" data-f="${f}" placeholder="请填写 ${f}">`}
+          </div>`;
+        }).join("")}
+      </div>
+      <div class="si-foot">
+        <span class="si-meta"><b>支持方式</b>照片 · 人脸 · 位置 · 手势 · 扫码 · 数字 · 群签到</span>
+        <button class="si-btn" id="siBtn"><span>📋 一键复制任务单</span><i></i></button>
+      </div>
+      <p class="si-warn">🔒 本页仅在你的浏览器本地暂存填写内容，不会上传账号、密码或照片到任何服务器。</p>
+    </div>`;
+
+  const KEY="signin_xtkc_";
+  const ins={};
+  wrap.querySelectorAll(".si-in").forEach(inp=>{
+    const f=inp.dataset.f;ins[f]=inp;
+    inp.value=sessionStorage.getItem(KEY+f)||"";
+    inp.addEventListener("input",()=>sessionStorage.setItem(KEY+f,inp.value));
+  });
+  const up=wrap.querySelector(".si-up"),file=up.querySelector("input");
+  let photoOk=false;
+  function load(f){if(!f)return;if(f.size>10*1024*1024){toast("照片超过 10MB 啦");return;}
+    const r=new FileReader();
+    r.onload=()=>{photoOk=true;up.classList.add("ok");up.querySelector("b").textContent=f.name;
+      up.querySelector("small").textContent=(f.size/1024/1024).toFixed(2)+" MB · 已就绪";
+      sessionStorage.setItem(KEY+"照片",r.target.result);};
+    r.readAsDataURL(f);};
+  file.addEventListener("change",e=>load(e.target.files[0]));
+  up.addEventListener("dragover",e=>{e.preventDefault();up.style.borderColor="var(--accent)";});
+  up.addEventListener("drop",e=>{e.preventDefault();load(e.dataTransfer.files[0]);});
+
+  const btn=wrap.querySelector("#siBtn"),st=wrap.querySelector("#siState");
+  btn.addEventListener("click",async()=>{
+    const miss=SIGNTASK.filter(f=>{
+      if(f==="照片")return !photoOk;
+      return !ins[f].value.trim();
+    });
+    if(miss.length){
+      st.textContent="缺："+miss.join("、");st.style.color="var(--accent3)";
+      btn.querySelector("span").textContent="⚠️ 信息不全，再检查一下";return;
+    }
+    const txt=`【学习通签到任务单】
+课程名字：${ins["课程名字"].value.trim()}
+账号：${ins["账号"].value.trim()}
+密码：${ins["密码"].value.trim()}
+时间：${ins["时间"].value.trim()}
+地址：${ins["地址"].value.trim()}
+照片：已附（${up.querySelector("b").textContent}）
+签到方式：照片 / 人脸 / 位置 / 手势 / 扫码 / 数字 / 群签到`;
+    st.textContent="已复制到剪贴板";st.style.color="var(--accent4)";
+    btn.classList.add("run");btn.querySelector("span").textContent="✅ 已复制，去微信粘贴吧～";
+    try{await navigator.clipboard.writeText(txt);}catch(e){prompt("自动复制被拦了，手动全选复制：",txt);}
+    setTimeout(()=>{btn.classList.remove("run");btn.querySelector("span").textContent="📋 一键复制任务单";},2200);
+  });
+  return wrap;
+}
+
+/* ================= 今日校园 · 查寝打卡 ================= */
+const CQTASK=["查寝软件","学校","打卡账号","打卡密码","打卡地址","签到时间"];
+const CQ_KEY="cq_check_";
+function buildCqForm(){
+  const wrap=document.createElement("div");wrap.className="signin";
+  wrap.innerHTML=`
+    <div class="si-hero">
+      <div class="si-halo" style="background:radial-gradient(circle at 30% 20%,rgba(255,120,80,.55),transparent 60%),radial-gradient(circle at 80% 70%,rgba(255,80,140,.45),transparent 60%)"></div>
+      <div class="si-txt">
+        <span class="si-eyebrow">🛏️ 今日校园 · 查寝代打卡</span>
+        <h3>查寝打卡任务单</h3>
+        <p>把下面六项填好，<em>一键复制</em>发过去就行，夜归、销假、定位都能接。</p>
+      </div>
+      <div class="si-chips cq-c"><span>📱 软件打卡</span><span>📍 定位地址</span><span>🕘 签到时间</span><span>✅ 准时到寝</span></div>
+    </div>
+
+    <div class="si-card">
+      <div class="si-bar"><i></i><i></i><i></i><b>查寝信息单</b><em id="cqState">待提交</em></div>
+      <div class="si-grid">
+        ${CQTASK.map(f=>{
+          const isPwd=f==="打卡密码";
+          return `<div class="si-f${f==="打卡地址"||f==="签到时间"?" wide":""}">
+            <label>${f}<span>*</span></label>
+            <input class="si-in" type="${isPwd?"password":"text"}" data-f="${f}" placeholder="请填写 ${f}">
+          </div>`;
+        }).join("")}
+      </div>
+      <div class="cq-price">
+        <div class="cq-pbox"><b>单次</b><strong>10<span>元</span></strong><span>临时救急，来一次结一次</span></div>
+        <div class="cq-pbox hot"><b>包 8 次以上</b><strong>5<span>元/次</span></strong><span>用得勤，单价直接砍半</span></div>
+        <div class="cq-pbox"><b>包月</b><strong>100<span>元</span></strong><span>整月查寝无忧，随叫随到</span></div>
+      </div>
+      <div class="si-foot">
+        <span class="si-meta"><b>交付</b>填完自动排版 → 复制发给客服即受理</span>
+        <button class="si-btn" id="cqBtn"><span>📋 一键复制发我</span><i></i></button>
+      </div>
+      <p class="si-warn">🔒 账号密码只在你这台设备的浏览器里暂存，刷新不丢、关页即清，绝不上传任何服务器。</p>
+    </div>`;
+
+  const ins={};
+  wrap.querySelectorAll(".si-in").forEach(inp=>{
+    const f=inp.dataset.f;ins[f]=inp;
+    inp.value=sessionStorage.getItem(CQ_KEY+f)||"";
+    inp.addEventListener("input",()=>sessionStorage.setItem(CQ_KEY+f,inp.value));
+  });
+  const st=wrap.querySelector("#cqState"),btn=wrap.querySelector("#cqBtn");
+  btn.addEventListener("click",async()=>{
+    const miss=CQTASK.filter(f=>!ins[f].value.trim());
+    if(miss.length){
+      st.textContent="缺："+miss.join("、");st.style.color="var(--accent3)";
+      btn.querySelector("span").textContent="⚠️ 信息不全，再检查一下";return;
+    }
+    const txt=`【今日校园·查寝打卡】
+查寝软件：${ins["查寝软件"].value.trim()}
+学校：${ins["学校"].value.trim()}
+打卡账号：${ins["打卡账号"].value.trim()}
+打卡密码：${ins["打卡密码"].value.trim()}
+打卡地址：${ins["打卡地址"].value.trim()}
+签到时间：${ins["签到时间"].value.trim()}
+
+📦 套餐：单次 10 元｜8 次以上 5 元/次｜包月 100 元
+麻烦确认下时间，我这边准时打卡，谢啦！`;
+    st.textContent="已复制到剪贴板";st.style.color="var(--accent4)";
+    btn.classList.add("run");btn.querySelector("span").textContent="✅ 已复制，去微信粘贴吧～";
+    try{await navigator.clipboard.writeText(txt);}catch(e){prompt("自动复制被拦了，手动全选复制：",txt);}
+    setTimeout(()=>{btn.classList.remove("run");btn.querySelector("span").textContent="📋 一键复制发我";},2200);
+  });
+  return wrap;
+}
+
+/* ================= 论文指导 · 服务台 ================= */
+const PAPER_KEY="paper_lw_";
+const PAPER_SERV=[
+  ["服务类型","lw_svc","专科/本科/硕士 · 开题 · 查重降重 · 格式排版 · 答辩"],
+  ["学校专业","lw_major","学校全称 + 专业，方便按学科匹配老师"],
+  ["论文题目","lw_title","已有题目就填，没有写「待定」也行"],
+  ["字数要求","lw_words","正文多少字 / 有无图表公式，如 8000 字 + 12 图"],
+  ["查重要求","lw_check","指定库与重复率，如 知网 <15%、维普 <20%"],
+  ["截止时间","lw_deadline","交稿节点 / 答辩日期，越急越要写清"],
+  ["补充说明","lw_note","选填：目录要求、参考文献条数、AI率、是否要答辩PPT"]
+];
+function paperColor(nm,i){
+  const pal=["#ff9a5a","#ff6b81","#c77bff","#a98bff","#4cc2ff","#00e0ff","#39e6a0","#ffcf3f","#ff8a3d","#6fd0ff","#ff9f43","#2fdd8e"];
+  return pal[(i*7+nm.length*3)%pal.length];
+}
+function buildPaperWall(){
+  const wrap=document.createElement("div");wrap.className="signin paper";
+  wrap.innerHTML=`
+    <div class="si-hero pw-hero">
+      <div class="si-halo" style="background:radial-gradient(circle at 30% 20%,rgba(199,123,255,.5),transparent 60%),radial-gradient(circle at 82% 72%,rgba(255,106,129,.42),transparent 60%)"></div>
+      <div class="si-txt pw-txt">
+        <span class="si-eyebrow pw-eyebrow">📄 论文指导 · 从开题到答辩</span>
+        <h3>把需求说清楚，客服给你排方案</h3>
+        <p>专科 / 本科 / 硕士都能接，<b>开题定题、文献综述、正文撰写、查重降重、格式排版、答辩 PPT</b> 一条龙。<em>先发需求单，周期和费用按截止时间单独报，不先问价也别急。</em></p>
+      </div>
+      <div class="pw-sum"><b id="pwCnt">${PAPER_SERV.length-1}</b><span>项可填需求</span></div>
+    </div>
+
+    <div class="si-card">
+      <div class="si-bar"><i></i><i></i><i></i><b>论文需求单</b><em id="pwState">填完自动排版</em></div>
+
+      <div class="pw-chips" id="pwChips">
+        ${DATA["论文指导"].map(([n],i)=>`<button type="button" class="pw-chip" data-m="${esc(n)}" style="--c:${paperColor(n,i)}"><span>${esc(n)}</span></button>`).join("")}
+      </div>
+
+      <div class="pw-form">
+        ${PAPER_SERV.map(([label,key,ph],i)=>{
+          const wide=["lw_title","lw_words","lw_check","lw_deadline","lw_note"].includes(key);
+          return `<div class="pw-f ${wide?"wide":""}"><label>${label}${!["lw_note","lw_title"].includes(key)?'<span>*</span>':''}</label>
+            <input class="pw-in" id="${key}" placeholder="${esc(ph)}"${key==="lw_svc"?" list=\"pwSvcList\"":""}></div>`;
+        }).join("")}
+        <datalist id="pwSvcList">${DATA["论文指导"].map(([n])=>`<option value="${esc(n)}">`).join("")}</datalist>
+      </div>
+
+      <div class="mj-foot">
+        <span class="mj-meta"><b>流程</b>选服务 → 填需求 → 复制发客服 → 确认周期与费用 → 交稿返修到过</span>
+        <button class="pw-btn" id="pwBtn"><span>📋 一键复制需求单</span><i></i></button>
+      </div>
+      <p class="mj-warn">🔒 只在本机浏览器暂存，不上传题目、学校或任何个人信息。学术诚信提醒：交付内容请仅作思路参考与格式范本，正式提交前按学校规范自行核对、改写并查重；涉及学位与评奖评优，务必合规完成。</p>
+    </div>`;
+
+  const g=id=>wrap.querySelector("#"+id);
+  PAPER_SERV.forEach(([,key])=>{
+    const el=g(key); if(!el) return;
+    el.value=sessionStorage.getItem(PAPER_KEY+key)||"";
+    el.addEventListener("input",()=>sessionStorage.setItem(PAPER_KEY+key,el.value));
+  });
+  const svcIn=g("lw_svc"),chips=wrap.querySelector("#pwChips"),pick=wrap.querySelector("#pwState"),btn=g("pwBtn");
+  chips.querySelectorAll(".pw-chip").forEach(b=>{
+    b.onclick=()=>{
+      svcIn.value=b.dataset.m;
+      sessionStorage.setItem(PAPER_KEY+"lw_svc",b.dataset.m);
+      chips.querySelectorAll(".pw-chip").forEach(x=>x.classList.remove("on"));
+      b.classList.add("on");
+      pick.textContent="已选："+b.dataset.m;
+    };
+  });
+
+  btn.onclick=async()=>{
+    const v=k=>g(k).value.trim();
+    const must=["lw_svc","lw_major","lw_words","lw_check","lw_deadline"].map(k=>[k,v(k)]);
+    const miss=must.filter(([,x])=>!x).map(([k])=>PAPER_SERV.find(([,kk])=>kk===k)[0]);
+    if(miss.length){pick.textContent="还缺："+miss.join("、");pick.style.color="var(--accent3)";
+      btn.querySelector("span").textContent="⚠️ 必填项再检查一下";return;}
+    const note=v("lw_note"),title=v("lw_title");
+    const txt="【论文指导 · 需求单】\n"
+      +"学校专业："+v("lw_major")+"\n"
+      +(title?("论文题目："+title+"\n"):"")
+      +"字数要求："+v("lw_words")+"\n"
+      +"查重要求："+v("lw_check")+"\n"
+      +"截止时间："+v("lw_deadline")+"\n"
+      +(note?("补充说明："+note+"\n"):"")
+      +"👉 麻烦先按我的截止时间报个周期和费用，合适我就定，谢谢！";
+    pick.textContent="已复制到剪贴板";pick.style.color="var(--accent4)";
+    btn.classList.add("run");btn.querySelector("span").textContent="✅ 已复制，去微信发给客服吧～";
+    try{await navigator.clipboard.writeText(txt);}catch(e){prompt("自动复制被拦了，手动全选复制：",txt);}
+    setTimeout(()=>{btn.classList.remove("run");btn.querySelector("span").textContent="📋 一键复制需求单";},2200);
+  };
+  return wrap;
+}
+
+/* ================= 实习GZ · 专业大全 ================= */
+const MAJOR_KEY="major_gz_";
+function majorColor(nm,i){
+  const pal=["#a98bff","#00e0ff","#ff9ad0","#39e6a0","#ffcf3f","#ff8a3d","#4cc2ff","#c77bff","#ff6b6b","#2fdd8e","#ff9f43","#6fd0ff"];
+  return pal[(i*7+Math.floor(nm.length*3))%pal.length];
+}
+function buildMajorWall(){
+  const cat=DATA["实习GZ"];
+  const wrap=document.createElement("div");wrap.className="signin major";
+  wrap.innerHTML=`
+    <div class="si-hero mj-hero">
+      <div class="si-halo"></div>
+      <div class="si-txt mj-txt">
+        <span class="si-eyebrow mj-eyebrow">🧳 实习GZ · 实习生专业大全</span>
+        <h3>选个专业，客服给你对口的实习公司</h3>
+        <p>报自己的<b>专业 + 学校 + 想在哪座城市</b>，客服按行业给你匹配对口单位。<em>别选和学校同市的公司，避免回访穿帮。</em></p>
+      </div>
+      <div class="mj-sum"><b id="mjCnt">${cat.length}</b><span>个专业方向</span></div>
+    </div>
+
+    <div class="si-card">
+      <div class="si-bar"><i></i><i></i><i></i><b>实习盖章 · 需求单</b><em id="mjState">填完自动排版</em></div>
+
+      <div class="mj-form">
+        <div class="mj-f"><label>我的专业<span>*</span></label>
+          <input class="mj-in" id="mjMajor" list="mjList" placeholder="直接输入，或从下方 ${cat.length} 个专业里点一个">
+          <datalist id="mjList">${cat.map(([n])=>`<option value="${esc(n)}">`).join("")}</datalist>
+        </div>
+        <div class="mj-f"><label>学校名称<span>*</span></label>
+          <input class="mj-in" id="mjSchool" placeholder="请填写 学校名称"></div>
+        <div class="mj-f wide"><label>需要哪里的公司<span>*</span> <small>别填学校所在市，回访更安全</small></label>
+          <input class="mj-in" id="mjCity" placeholder="请填写 目标城市 / 区县，例如：成都 · 高新区"></div>
+        <div class="mj-f wide"><label>补充说明 <small>选填</small></label>
+          <input class="mj-in" id="mjNote" placeholder="行业偏好、单位性质、实习周期、是否要三方协议 / 盖章 / 周报日报等"></div>
+      </div>
+
+      <div class="mj-wallhead"><span>📚 专业大全 · 点一下自动填入上方</span><em id="mjPick">未选择</em></div>
+      <div class="mj-wall" id="mjWall">
+        ${cat.map(([n],i)=>`<button type="button" class="mj-chip" data-m="${esc(n)}" style="--c:${majorColor(n,i)}"><span>${esc(n)}</span></button>`).join("")}
+      </div>
+
+      <div class="mj-foot">
+        <span class="mj-meta"><b>流程</b>选专业 → 填学校城市 → 复制发客服 → 对口公司安排到位</span>
+        <button class="mj-btn" id="mjBtn"><span>📋 一键复制发客服</span><i></i></button>
+      </div>
+      <p class="mj-warn">🔒 只在本机浏览器暂存，不上传学校、专业或任何联系方式。实习安排请自行核实单位资质与学校要求；上方专业清单为检索目录，具体岗位以实际供需为准。</p>
+    </div>`;
+
+  const g=id=>wrap.querySelector("#"+id);
+  ["mjMajor","mjSchool","mjCity","mjNote"].forEach(id=>{
+    const el=g(id);
+    el.value=sessionStorage.getItem(MAJOR_KEY+id)||"";
+    el.addEventListener("input",()=>sessionStorage.setItem(MAJOR_KEY+id,el.value));
+  });
+  const pick=g("mjPick"),mjIn=g("mjMajor"),wall=g("mjWall");
+  wall.querySelectorAll(".mj-chip").forEach(b=>{
+    b.onclick=()=>{
+      mjIn.value=b.dataset.m.replace(/&(?:amp|lt|gt|quot);/g,c=>({"&amp;":"&","&lt;":"<","&gt;":">","&quot;":'"'}[c]));
+      sessionStorage.setItem(MAJOR_KEY+"mjMajor",mjIn.value);
+      pick.textContent="已选："+b.dataset.m;
+      wall.querySelectorAll(".mj-chip").forEach(x=>x.classList.remove("on"));
+      b.classList.add("on");
+    };
+  });
+
+  const st=g("mjState"),btn=g("mjBtn");
+  btn.onclick=async()=>{
+    const major=mjIn.value.trim(),school=g("mjSchool").value.trim(),
+          city=g("mjCity").value.trim(),note=g("mjNote").value.trim();
+    if(!major||!school||!city){
+      st.textContent="还缺：专业 / 学校 / 目标城市";st.style.color="var(--accent3)";
+      btn.querySelector("span").textContent="⚠️ 三项必填，再检查一下";return;
+    }
+    const txt=`【实习盖章 · 对口公司匹配】
+我的专业：${major}
+学校名称：${school}
+需要哪里的公司：${city}
+${note?("补充说明："+note+"\n"):""}
+👉 请按我的专业和学校，帮我匹配对口的公司，谢谢！
+（ps：尽量别安排和学校同市的单位，怕回访穿帮～）`;
+    st.textContent="已复制到剪贴板";st.style.color="var(--accent4)";
+    btn.classList.add("run");btn.querySelector("span").textContent="✅ 已复制，去微信发给客服吧～";
+    try{await navigator.clipboard.writeText(txt);}catch(e){prompt("自动复制被拦了，手动全选复制：",txt);}
+    setTimeout(()=>{btn.classList.remove("run");btn.querySelector("span").textContent="📋 一键复制发客服";},2200);
+  };
+  return wrap;
+}
+
+/* ================= 联系我们 · 客服直达 ================= */
+const QQ_NUM="360350094";
+const CT_KEY="ct_";
+function buildContact(){
+  const wrap=document.createElement("div");wrap.className="signin";
+  wrap.innerHTML=`
+    <div class="si-hero">
+      <div class="si-halo" style="background:radial-gradient(circle at 30% 20%,rgba(0,224,255,.5),transparent 60%),radial-gradient(circle at 80% 70%,rgba(124,92,255,.5),transparent 60%)"></div>
+      <div class="si-txt">
+        <span class="si-eyebrow">📞 更多问题咨询 · 联系我们</span>
+        <h3>有啥问题，直接戳我</h3>
+        <p>填一句你想问的，点复制后<b>加 QQ 或绿泡泡</b>发过去，我这边看到就回。</p>
+      </div>
+      <div class="si-chips cq-c"><span>💬 QQ 同号</span><span>🟢 绿泡泡同号</span><span>⚡ 看到就回</span></div>
+    </div>
+
+    <div class="si-card">
+      <div class="si-bar"><i></i><i></i><i></i><b>联系方式</b><em id="ctState">待发送</em></div>
+
+      <div class="ct-nums">
+        <div class="ct-num" id="ctQQ">
+          <span class="ct-ic">🐧</span>
+          <div class="ct-info">
+            <b>QQ 号</b>
+            <strong>${QQ_NUM}</strong>
+            <span>复制后打开 QQ → 加好友 → 粘贴问题</span>
+          </div>
+          <button class="ct-copy" data-n="${QQ_NUM}" data-l="QQ"><span>复制 QQ</span></button>
+        </div>
+        <div class="ct-num" id="ctWx">
+          <span class="ct-ic">💚</span>
+          <div class="ct-info">
+            <b>绿泡泡（微信）</b>
+            <strong>${QQ_NUM}</strong>
+            <span>和 QQ 同一个号，不用再记一遍</span>
+          </div>
+          <button class="ct-copy" data-n="${QQ_NUM}" data-l="绿泡泡"><span>复制绿泡泡</span></button>
+        </div>
+      </div>
+
+      <div class="si-grid">
+        <div class="si-f wide">
+          <label>想问点啥<span>*</span></label>
+          <textarea class="si-in si-ta" id="ctMsg" placeholder="例：学习通人脸签到怎么弄？/ 实习盖章能安排成都的公司吗？/ 论文查重能降到 10% 以内不？" rows="3">${sessionStorage.getItem(CT_KEY+"msg")||""}</textarea>
+        </div>
+      </div>
+
+      <div class="si-foot">
+        <span class="si-meta"><b>小提示</b>QQ / 绿泡泡都是 <b>${QQ_NUM}</b>，复制号码再加好友更快</span>
+        <button class="si-btn" id="ctBtn"><span>📋 复制号码 + 问题发我</span><i></i></button>
+      </div>
+      <p class="si-warn">🔒 号码只显示、只复制，不上传也不留档；你填的那句话只存在自己浏览器里，关页即清。</p>
+    </div>`;
+
+  const ta=wrap.querySelector("#ctMsg");
+  ta.addEventListener("input",()=>sessionStorage.setItem(CT_KEY+"msg",ta.value));
+
+  wrap.querySelectorAll(".ct-copy").forEach(b=>{
+    b.addEventListener("click",async()=>{
+      const num=b.dataset.n,lab=b.dataset.l;
+      const done=()=>{b.classList.add("run");b.querySelector("span").textContent="✅ 已复制 "+lab+"号";
+        setTimeout(()=>{b.classList.remove("run");b.querySelector("span").textContent="复制 "+lab;},1800);};
+      try{await navigator.clipboard.writeText(num);done();}
+      catch(e){prompt(lab+" 号（手动复制）：",num);done();}
+    });
+  });
+
+  const st=wrap.querySelector("#ctState"),btn=wrap.querySelector("#ctBtn");
+  btn.addEventListener("click",async()=>{
+    const msg=ta.value.trim();
+    if(!msg){st.textContent="写一句问题再复制呀";st.style.color="var(--accent3)";
+      btn.querySelector("span").textContent="⚠️ 还没写想问啥";return;}
+    const txt=`【问题咨询】
+QQ / 绿泡泡：${QQ_NUM}
+想问：${msg}
+
+麻烦看到回我一下，谢啦～`;
+    st.textContent="号码 + 问题已复制";st.style.color="var(--accent4)";
+    btn.classList.add("run");btn.querySelector("span").textContent="✅ 已复制，去 QQ/微信粘贴吧～";
+    try{await navigator.clipboard.writeText(txt);}catch(e){prompt("自动复制被拦了，手动全选复制：",txt);}
+    setTimeout(()=>{btn.classList.remove("run");btn.querySelector("span").textContent="📋 复制号码 + 问题发我";},2200);
+  });
+  return wrap;
+}
+
+/* ================= 渲染 ================= */
+function render(){
+  renderNav();
+  const main=document.querySelector("#main");main.innerHTML="";
+  const data=DATA[state.cat];
+  const order=state.order[state.cat]||data.map((_,i)=>i);
+
+  const panel=document.createElement("section");panel.className="panel";
+  const hero=document.createElement("div");hero.className="hero";
+  hero.innerHTML=`<div><h2>${ICONS[CATS.indexOf(state.cat)]} ${state.cat}<em id="subTitle"></em></h2><p id="desc"></p></div>`;
+  panel.appendChild(hero);
+
+  const tools=document.createElement("div");tools.className="tools";
+  tools.innerHTML=`
+    <div class="act">
+      <button data-v="all" class="${state.view==='all'?'on':''}">全部</button>
+      <button data-v="sort" class="${state.view==='sort'?'on':''}">✋ 排序模式</button>
+      <button id="addBtn">＋ 添加入口</button>
+    </div>`;
+  panel.appendChild(tools);
+  main.appendChild(panel);
+
+  const grid=document.createElement("div");grid.className="grid";grid.id="grid";
+
+  /* ---- 三个专用页面 ---- */
+  if(state.cat==="学习通课程"){panel.appendChild(buildSignIn());main.appendChild(panel);bindTools();return;}
+  if(state.cat==="今日校园"){panel.appendChild(buildCqForm());main.appendChild(panel);bindTools();return;}
+  if(state.cat==="论文指导"){panel.appendChild(buildPaperWall());main.appendChild(panel);bindTools();return;}
+  if(state.cat==="实习GZ"){panel.appendChild(buildMajorWall());main.appendChild(panel);bindTools();return;}
+  if(state.cat==="联系我们"){panel.appendChild(buildContact());main.appendChild(panel);bindTools();return;}
+
+  /* ---- 普通卡片墙 ---- */
+  const list=order.map(i=>data[i]).filter(Boolean);
+  list.forEach(([nm,tag,key])=>grid.appendChild(cardEl(nm,tag,key)));
+  panel.appendChild(grid);
+  if(state.view==="sort")enableSort(grid);
+
+  const descMap={
+    "实习DK平台":`共 ${data.length} 个实习 / 实践 / 签到平台，重复项已保留原样。支持拖拽排位，常用的一律放最前。`,
+    "实用软件":"装机 & 学习刚需，浏览器 / 网盘 / 文献 / 录屏一条龙。",
+    "学习通课程":"<b>学习通课程签到方式目前有：照片、人脸、位置、手势，扫码、数字、群签到等等多种签到完事，都可以完美解决。</b>",
+    "今日校园":"<b>查寝代打卡：</b>填好查寝软件 / 学校 / 打卡账号 / 打卡密码 / 打卡地址 / 签到时间，一键复制发我。<b>单次 10 元，包 8 次以上 5 元/次，可包月 100 元。</b>",
+    "论文指导":"<b>论文指导一条龙：</b>专科本科硕士、开题到答辩、查重降重到格式排版，选好服务类型填需求单，<em>一键复制发客服</em>。具体周期、字数与费用按你的截止时间单独报，先问再定更稳。",
+    "网课":"直播、回放、倍速、自动签到，网课人的兵器库。",
+    "实习GZ":`<b>实习生专业大全（${data.length} 个方向）</b>：报自己的专业 + 学校 + 想在哪里的公司，客服给你匹配对口单位。<em>别选和学校同市的，避免回访穿帮。</em> 填完一键复制发客服。`,
+    "请假条":"事假病假公假、审批进度、销假导出，模板都备好了。",
+    "联系我们":"<b>更多问题咨询，联系我们 → QQ：${QQ_NUM}　绿泡泡：${QQ_NUM}</b>（QQ、微信同一个号）。把想问的写一句，点一下就能连号码带问题一起复制走，看到就回。"
+  };
+  document.querySelector("#desc").innerHTML=descMap[state.cat]||"";
+  document.querySelector("#subTitle").textContent=` · ${data.length} 个入口`;
+  bindTools();
+}
+
+function bindTools(){
+  document.querySelectorAll(".act button[data-v]").forEach(b=>b.onclick=()=>{state.view=b.dataset.v;render();});
+  const ad=document.querySelector("#addBtn");if(ad)ad.onclick=addEntry;
+}
+
+/* ================= 启动 ================= */
+document.querySelector("#yr").textContent=new Date().getFullYear();
+function clock(){const d=new Date();document.querySelector("#clock").textContent=d.toLocaleTimeString("zh-CN",{hour12:false});}
+clock();setInterval(clock,1000);
+document.querySelector("#resetBtn").onclick=e=>{e.preventDefault();
+  if(confirm("恢复全部类目的默认排序？")){
+    const n={};CATS.forEach(c=>n[c]=DATA[c].map((_,i)=>i));
+    state.order=n;save();render();toast("已恢复默认排序");
+  }
+};
+render();
+</script>
+</body>
+</html>
